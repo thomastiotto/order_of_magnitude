@@ -1,8 +1,12 @@
-=================
+==================
 Order of magnitude
-=================
+==================
 Pure Python 3 implementation to convert floats, lists of floats, NumPy arrays to International System
 of Units (SI) strings.
+
+Install by::
+
+    pip install order-of-magnitude
 
 Some examples::
 
