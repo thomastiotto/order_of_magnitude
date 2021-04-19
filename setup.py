@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
 
 setup(
         name='order_of_magnitude',
-        version='v1.2',
+        version='v1.3',
         packages=['order_of_magnitude'],
         url='https://github.com/Tioz90/order_of_magnitude',
         license='MIT',
