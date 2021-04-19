@@ -10,6 +10,8 @@ Install by::
 
 Some examples::
 
+    from order_of_magnitude import order_of_magnitude
+
     order_of_magnitude.oom(1.20679264e+19)
     # returns '12.1 E'
     order_of_magnitude.oom(1.20679264e+19, decimals=4)
