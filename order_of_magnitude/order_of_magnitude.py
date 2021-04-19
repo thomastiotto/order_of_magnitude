@@ -3,13 +3,11 @@ def oom(x, prefix=False, decimals=1):
     import math
 
     def closest(search_key):
-        closest_key = min(oom.keys(), key=lambda key: abs(key - search_key)) or oom[search_key]
-        if closest_key in oom:
-            return closest_key
-        if closest_key >= len(oom):
-            return len(oom)
-        return list(oom.keys())[list(oom).index(closest_key) + 1] \
-            if list(oom).index(closest_key) + 1 < len(oom) else closest_key
+        if search_key in oom:
+            return search_key
+        for k in oom.keys():
+            if search_key > k:
+                return k
 
     def fexp(f):
         return int(math.floor(math.log10(abs(f)))) if f != 0 else 0
@@ -60,7 +58,7 @@ def oom(x, prefix=False, decimals=1):
                 -23: "g",
                 }
 
-    if not isinstance(x, list):
+    if isinstance(x, float):
         x = [x]
 
     ooms = list(map(lambda x: int(math.floor(math.log10(x))), x))
