@@ -26,6 +26,10 @@ Available functions
 - ``short_scale_dict()``: returns the dictionary mapping order of magnitude to short scale measures
 - ``long_scale_dict()``: returns the dictionary mapping order of magnitude to long scale measures
 
+``x`` can be a scalar, a list, or a NumPy array.
+``decimals`` controls how many decimal points are printed.
+``omit_x`` only returns the SI units without the corresponding input number.
+``word`` controls if the printed output is in word-form or as a number.
 
 Examples
 --------
