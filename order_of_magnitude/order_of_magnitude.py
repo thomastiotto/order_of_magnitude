@@ -61,10 +61,11 @@ def oom(x, prefix=False, decimals=1):
     if isinstance(x, float):
         x = [x]
 
-    ooms = list(map(lambda x: int(math.floor(math.log10(x))), x))
+    ooms = list(map(lambda x: int(math.floor(math.log10(x) if x!=0 else 0)), x))
     ooms_matched = list(map(closest, ooms))
     diff = list(map(abs, map(operator.sub, ooms, ooms_matched)))
-    res_string = [f"{fman(i) * int(math.pow(10, exp)):.{decimals}f} {oom[o]}" for i, exp, o in
-                  zip(x, diff, ooms_matched)]
+    res_string = [f"{fman(i) * int(math.pow(10, exp)):.{decimals}f} {oom[o]}" if i !=0
+                  else f"{fman(i) * int(math.pow(10, exp)):.{decimals}f}"
+                  for i, exp, o in zip(x, diff, ooms_matched)]
 
     return res_string if len(res_string) > 1 else res_string[0]
