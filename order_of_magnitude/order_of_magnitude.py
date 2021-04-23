@@ -1,4 +1,5 @@
 import math
+import operator
 
 
 def __fexp(f):
@@ -31,6 +32,28 @@ __prefixes = {
         -21: "zepto",
         -24: "quaco",
         }
+__prefixes_inverted = {
+        "yotta": 24,
+        "zetta": 21,
+        "exa"  : 18,
+        "peta" : 15,
+        "tera" : 12,
+        "giga" : 9,
+        "mega" : 6,
+        "kilo" : 3,
+        "hecto": 2,
+        "deca" : 1,
+        "deci" : -1,
+        "centi": -2,
+        "mili" : -3,
+        "micro": -6,
+        "nano" : -9,
+        "pico" : -12,
+        "femto": -15,
+        "atto" : -18,
+        "zepto": -21,
+        "quaco": -24,
+        }
 __symbols = {
         24 : "Y",
         21 : "Z",
@@ -52,6 +75,28 @@ __symbols = {
         -18: "a",
         -21: "z",
         -24: "g",
+        }
+__symbols_inverted = {
+        "Y" : 24,
+        "Z" : 21,
+        "E" : 18,
+        "P" : 15,
+        "T" : 12,
+        "G" : 9,
+        "M" : 6,
+        "k" : 3,
+        "h" : 2,
+        "da": 1,
+        "d" : -1,
+        "c" : -2,
+        "m" : -3,
+        "µ" : -6,
+        "n" : -9,
+        "p" : -12,
+        "f" : -15,
+        "a" : -18,
+        "z" : -21,
+        "g" : -24,
         }
 __short_scale = {
         24 : "septillion",
@@ -100,8 +145,6 @@ __long_scale = {
 
 
 def __compute_oom(x, dictionary):
-    import operator
-
     def closest(search_key):
         if search_key in dictionary:
             return search_key
@@ -115,29 +158,52 @@ def __compute_oom(x, dictionary):
 
     ooms = list(map(lambda x: int(math.floor(math.log10(x) if x != 0 else 0)), x))
     ooms_matched = list(map(closest, ooms))
-    diff = list(map(abs, map(operator.sub, ooms, ooms_matched)))
+    diff = list(map(operator.sub, ooms, ooms_matched))
 
     return ooms, ooms_matched, diff
 
 
-def __return_oom(x, dictionary, decimals, omit_x, word):
+def __compute_oom_reference(x, ref_scale):
+    import collections
+
+    if isinstance(ref_scale, (int, float)):
+        scaler = __fexp(ref_scale)
+
+    if isinstance(ref_scale, str):
+        m = collections.ChainMap(__prefixes_inverted, __symbols_inverted)
+        try:
+            scaler = m[ref_scale]
+        except KeyError:
+            raise KeyError(f"{ref_scale} is not a valid SI measure")
+
+    ooms = list(map(lambda x: int(math.floor(math.log10(x) if x != 0 else 0)), x))
+    ooms_matched = [scaler for i in x]
+    diff = list(map(operator.sub, ooms, ooms_matched))
+
+    return ooms, ooms_matched, diff
+
+
+def __return_oom(x, dictionary, decimals, ref_scale, omit_x, word):
     from num2words import num2words
 
     if isinstance(x, float):
         x = [x]
 
-    ooms, ooms_matched, diff = __compute_oom(x, dictionary)
+    if ref_scale:
+        ooms, ooms_matched, diff = __compute_oom_reference(x, ref_scale)
+    else:
+        ooms, ooms_matched, diff = __compute_oom(x, dictionary)
 
     if omit_x:
         res_string = [dictionary[o] if i != 0
                       else "N/A"
                       for i, exp, o in zip(x, diff, ooms_matched)]
     elif word:
-        res_string = [f"{num2words(__fman(i) * int(math.pow(10, exp)))} {dictionary[o]}" if i != 0
+        res_string = [f"{num2words(__fman(i) * math.pow(10, exp))} {dictionary[o]}" if i != 0
                       else "N/A"
                       for i, exp, o in zip(x, diff, ooms_matched)]
     else:
-        res_string = [f"{__fman(i) * int(math.pow(10, exp)):.{decimals}f} {dictionary[o]}" if i != 0
+        res_string = [f"{__fman(i) * math.pow(10, exp):.{decimals}f} {dictionary[o]}" if i != 0
                       else "N/A"
                       for i, exp, o in zip(x, diff, ooms_matched)]
 
@@ -163,20 +229,20 @@ def power_of_ten(x):
     return res if len(res) > 1 else res[0]
 
 
-def prefix(x, decimals=1, omit_x=None, word=False):
-    return __return_oom(x, __prefixes, decimals, omit_x, word=word)
+def prefix(x, decimals=1, scale=None, omit_x=None, word=False):
+    return __return_oom(x, __prefixes, decimals, scale, omit_x, word=word)
 
 
-def symbol(x, decimals=1, omit_x=None, word=False):
-    return __return_oom(x, __symbols, decimals, omit_x, word=word)
+def symbol(x, decimals=1, scale=None, omit_x=None, word=False):
+    return __return_oom(x, __symbols, decimals, scale, omit_x, word=word)
 
 
-def short_scale(x, decimals=1, omit_x=None, word=True):
-    return __return_oom(x, __short_scale, decimals, omit_x, word=word)
+def short_scale(x, decimals=1, scale=None, omit_x=None, word=True):
+    return __return_oom(x, __short_scale, decimals, scale, omit_x, word=word)
 
 
-def long_scale(x, decimals=1, omit_x=None, word=True):
-    return __return_oom(x, __long_scale, decimals, omit_x, word=word)
+def long_scale(x, decimals=1, scale=None, omit_x=None, word=True):
+    return __return_oom(x, __long_scale, decimals, scale, omit_x, word=word)
 
 
 def prefixes_dict():
