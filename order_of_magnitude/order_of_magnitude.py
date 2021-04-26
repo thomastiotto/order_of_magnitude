@@ -120,6 +120,28 @@ __short_scale = {
         -21: "sextillionth",
         -24: "septillionth",
         }
+__short_scale_inverted = {
+        "septillion"   : 24,
+        "sextillion"   : 21,
+        "quintillion"  : 18,
+        "quadrillion"  : 15,
+        "trillion"     : 12,
+        "billion"      : 9,
+        "million"      : 6,
+        "thousand"     : 3,
+        "hundred"      : 2,
+        "ten"          : 1,
+        "tenth"        : -1,
+        "hundredth"    : -2,
+        "thousandth"   : -3,
+        "millionth"    : -6,
+        "billionth"    : -9,
+        "trillionth"   : -12,
+        "quadrillionth": -15,
+        "quintillionth": -18,
+        "sextillionth" : -21,
+        "septillionth" : -24
+        }
 __long_scale = {
         24 : "quadrillion",
         21 : "trilliard",
@@ -141,6 +163,28 @@ __long_scale = {
         -18: "trillionth",
         -21: "trilliardth",
         -24: "quadrillionth",
+        }
+__long_scale_inverted = {
+        "quadrillion"  : 24,
+        "trilliard"    : 21,
+        "trillion"     : 18,
+        "billiard"     : 15,
+        "billion"      : 12,
+        "milliard"     : 9,
+        "million"      : 6,
+        "thousand"     : 3,
+        "hundred"      : 2,
+        "ten"          : 1,
+        "tenth"        : -1,
+        "hundredth"    : -2,
+        "thousandth"   : -3,
+        "millionth"    : -6,
+        "milliardth"   : -9,
+        "billionth"    : -12,
+        "billiardth"   : -15,
+        "trillionth"   : -18,
+        "trilliardth"  : -21,
+        "quadrillionth": -24,
         }
 
 
@@ -164,13 +208,13 @@ def __compute_oom(x, dictionary):
 
 
 def __compute_oom_reference(x, ref_scale):
-    import collections
+    from collections import ChainMap
 
     if isinstance(ref_scale, (int, float)):
         scaler = __fexp(ref_scale)
 
     if isinstance(ref_scale, str):
-        m = collections.ChainMap(__prefixes_inverted, __symbols_inverted)
+        m = ChainMap(__prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted)
         try:
             scaler = m[ref_scale]
         except KeyError:
@@ -226,7 +270,31 @@ def power_of_ten(x):
     exps = list(map(__fexp, x))
 
     res = [math.pow(10, exp) for exp in exps]
+
     return res if len(res) > 1 else res[0]
+
+
+def convert(x, scale):
+    from collections import ChainMap
+
+    if isinstance(x, float):
+        x = [x]
+
+    ooms = power_of_ten(x)
+
+    if isinstance(scale, (int, float)):
+        scaler = __fexp(scale)
+
+    if isinstance(scale, str):
+        m = ChainMap(__prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted)
+        try:
+            scaler = m[scale]
+        except KeyError:
+            raise KeyError(f"{scale} is not a valid SI measure")
+    scaler *= -1
+    res = [el * math.pow(10, scaler) for el in x]
+
+    return res
 
 
 def prefix(x, decimals=1, scale=None, omit_x=None, word=False):
