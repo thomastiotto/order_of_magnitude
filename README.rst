@@ -62,20 +62,18 @@ Examples
     print("Long scale only OOM:", order_of_magnitude.long_scale([1.1e-3, 100e3, 0], omit_x=True))
     print("Long scale dictionary:", order_of_magnitude.long_scale_dict())
 
-    ## Output
     # Order of magnitude: [-3, 5, 0]
     # Power of ten: [0.001, 100000.0, 1.0]
     # Convert to mili: [1.1, 100000000.0, 0.0]
-    # Prefix: ['1.1 mili', '100.0 kilo', 'N/A']
-    # Prefix in mili: ['1.1 mili', '100000000.0 mili', 'N/A']
-    # Prefix in kilo: ['0.00000110 kilo', '100.00000000 kilo', 'N/A']
-    # Prefix in kilo: ['0.0 kilo', '100.0 kilo', 'N/A']
-    # Symbol: ['1.1 m', '100.0 k', 'N/A']
-    # Only symbol: ['m', 'k', 'N/A']
-    # Prefix in words: ['one point one mili', 'one hundred kilo', 'N/A']
-    # Only prefix in words: ['mili', 'kilo', 'N/A']
-    # Short scale: ['one point one thousandth', 'one hundred thousand', 'N/A']
-    # Short scale in numbers: ['1.1 thousandth', '100.0 thousand', 'N/A']
-    # Long scale only OOM: ['thousandth', 'thousand', 'N/A']
-    # Long scale dictionary: {24: 'quadrillion', 21: 'trilliard', 18: 'trillion', 15: 'billiard', 12: 'billion', 9: 'milliard', 6: 'million', 3: 'thousand', 2: 'hundred', 1: 'ten', -1: 'tenth', -2: 'hundredth', -3: 'thousandth', -6: 'millionth', -9: 'milliardth', -12: 'billionth', -15: 'billiardth', -18: 'trillionth', -21: 'trilliardth', -24: 'quadrillionth'}
-
+    # Prefix: ['1.1 mili', '5.0 ', '0.0 ']
+    # Prefix in mili: ['1.1 mili', '100000000.0 mili', '0.0 mili']
+    # Prefix in kilo: ['0.00000110 kilo', '100.00000000 kilo', '0.00000000 kilo']
+    # Prefix in kilo: ['0.0 kilo', '100.0 kilo', '0.0 kilo']
+    # Symbol: ['1.1 m', '100.0 k', '0.0 ']
+    # Only symbol: ['m', 'k', '']
+    # Prefix in words: ['one point one mili', 'one hundred kilo', 'zero ']
+    # Only prefix in words: ['mili', 'kilo', '']
+    # Short scale: ['one point one thousandth', 'one hundred thousand', 'zero ']
+    # Short scale in numbers: ['1.1 thousandth', '100.0 thousand', '0.0 ']
+    # Long scale only OOM: ['thousandth', 'thousand', '']
+    # Long scale dictionary: {24: 'quadrillion', 21: 'trilliard', 18: 'trillion', 15: 'billiard', 12: 'billion', 9: 'milliard', 6: 'million', 3: 'thousand', 2: 'hundred', 1: 'ten', 0: '', -1: 'tenth', -2: 'hundredth', -3: 'thousandth', -6: 'millionth', -9: 'milliardth', -12: 'billionth', -15: 'billiardth', -18: 'trillionth', -21: 'trilliardth', -24: 'quadrillionth'}

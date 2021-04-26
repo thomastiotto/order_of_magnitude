@@ -21,6 +21,7 @@ __prefixes = {
         3  : "kilo",
         2  : "hecto",
         1  : "deca",
+        0  : "",
         -1 : "deci",
         -2 : "centi",
         -3 : "mili",
@@ -65,6 +66,7 @@ __symbols = {
         3  : "k",
         2  : "h",
         1  : "da",
+        0  : "",
         -1 : "d",
         -2 : "c",
         -3 : "m",
@@ -109,6 +111,7 @@ __short_scale = {
         3  : "thousand",
         2  : "hundred",
         1  : "ten",
+        0  : "",
         -1 : "tenth",
         -2 : "hundredth",
         -3 : "thousandth",
@@ -153,6 +156,7 @@ __long_scale = {
         3  : "thousand",
         2  : "hundred",
         1  : "ten",
+        0  : "",
         -1 : "tenth",
         -2 : "hundredth",
         -3 : "thousandth",
@@ -239,16 +243,13 @@ def __return_oom(x, dictionary, decimals, ref_scale, omit_x, word):
         ooms, ooms_matched, diff = __compute_oom(x, dictionary)
 
     if omit_x:
-        res_string = [dictionary[o] if i != 0
-                      else "N/A"
+        res_string = [dictionary[o]
                       for i, exp, o in zip(x, diff, ooms_matched)]
     elif word:
-        res_string = [f"{num2words(__fman(i) * math.pow(10, exp))} {dictionary[o]}" if i != 0
-                      else "N/A"
+        res_string = [f"{num2words(__fman(i) * math.pow(10, exp))} {dictionary[o]}"
                       for i, exp, o in zip(x, diff, ooms_matched)]
     else:
-        res_string = [f"{__fman(i) * math.pow(10, exp):.{decimals}f} {dictionary[o]}" if i != 0
-                      else "N/A"
+        res_string = [f"{__fman(i) * math.pow(10, exp):.{decimals}f} {dictionary[o]}"
                       for i, exp, o in zip(x, diff, ooms_matched)]
 
     return res_string if len(res_string) > 1 else res_string[0]
