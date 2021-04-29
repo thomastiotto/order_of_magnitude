@@ -2,12 +2,12 @@ import math
 import operator
 
 
-def __fexp(f):
-    return int(math.floor(math.log10(abs(f)))) if f != 0 else 0
+def __fexp( f ):
+    return int( math.floor( math.log10( abs( f ) ) ) ) if f != 0 else 0
 
 
-def __fman(f):
-    return f / 10**__fexp(f)
+def __fman( f ):
+    return f / 10**__fexp( f )
 
 
 __prefixes = {
@@ -192,126 +192,127 @@ __long_scale_inverted = {
         }
 
 
-def __compute_oom(x, dictionary):
-    def closest(search_key):
+def __compute_oom( x, dictionary ):
+    def closest( search_key ):
         if search_key in dictionary:
             return search_key
         for k in dictionary.keys():
             if search_key > k:
                 return k
-        if search_key > max(dictionary):
-            return max(dictionary)
-        if search_key < min(dictionary):
-            return min(dictionary)
-
-    ooms = list(map(lambda x: int(math.floor(math.log10(x) if x != 0 else 0)), x))
-    ooms_matched = list(map(closest, ooms))
-    diff = list(map(operator.sub, ooms, ooms_matched))
-
+        if search_key > max( dictionary ):
+            return max( dictionary )
+        if search_key < min( dictionary ):
+            return min( dictionary )
+    
+    ooms = list( map( lambda x: int( math.floor( math.log10( x ) if x != 0 else 0 ) ), x ) )
+    ooms_matched = list( map( closest, ooms ) )
+    diff = list( map( operator.sub, ooms, ooms_matched ) )
+    
     return ooms, ooms_matched, diff
 
 
-def __compute_oom_reference(x, ref_scale):
+def __compute_oom_reference( x, ref_scale ):
     from collections import ChainMap
-
-    if isinstance(ref_scale, (int, float)):
-        scaler = __fexp(ref_scale)
-
-    if isinstance(ref_scale, str):
-        m = ChainMap(__prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted)
+    
+    if isinstance( ref_scale, (int, float) ):
+        scaler = __fexp( ref_scale )
+    
+    if isinstance( ref_scale, str ):
+        m = ChainMap( __prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted )
         try:
-            scaler = m[ref_scale]
+            scaler = m[ ref_scale ]
         except KeyError:
-            raise KeyError(f"{ref_scale} is not a valid SI measure")
-
-    ooms = list(map(lambda x: int(math.floor(math.log10(x) if x != 0 else 0)), x))
-    ooms_matched = [scaler for i in x]
-    diff = list(map(operator.sub, ooms, ooms_matched))
-
+            raise KeyError( f"{ref_scale} is not a valid SI measure" )
+    
+    ooms = list( map( lambda x: int( math.floor( math.log10( x ) if x != 0 else 0 ) ), x ) )
+    ooms_matched = [ scaler for i in x ]
+    diff = list( map( operator.sub, ooms, ooms_matched ) )
+    
     return ooms, ooms_matched, diff
 
 
-def __return_oom(x, dictionary, decimals, ref_scale, omit_x, word):
+def __return_oom( x, dictionary, decimals, ref_scale, word ):
     from num2words import num2words
-
-    if isinstance(x, float):
-        x = [x]
-
+    
+    if isinstance( x, float ):
+        x = [ x ]
+    
     if ref_scale:
-        ooms, ooms_matched, diff = __compute_oom_reference(x, ref_scale)
+        ooms, ooms_matched, diff = __compute_oom_reference( x, ref_scale )
     else:
-        ooms, ooms_matched, diff = __compute_oom(x, dictionary)
-
-    if omit_x:
-        res_string = [dictionary[o]
-                      for i, exp, o in zip(x, diff, ooms_matched)]
-    elif word:
-        res_string = [f"{num2words(__fman(i) * math.pow(10, exp))} {dictionary[o]}"
-                      for i, exp, o in zip(x, diff, ooms_matched)]
+        ooms, ooms_matched, diff = __compute_oom( x, dictionary )
+    
+    if word:
+        res_string = [ f"{num2words( __fman( i ) * math.pow( 10, exp ) )} {dictionary[ o ]}"
+                       for i, exp, o in zip( x, diff, ooms_matched ) ]
     else:
-        res_string = [f"{__fman(i) * math.pow(10, exp):.{decimals}f} {dictionary[o]}"
-                      for i, exp, o in zip(x, diff, ooms_matched)]
-
-    return res_string if len(res_string) > 1 else res_string[0]
-
-
-def order_of_magnitude(x):
-    if isinstance(x, float):
-        x = [x]
-
-    res = list(map(lambda x: int(math.floor(math.log10(x) if x != 0 else 0)), x))
-
-    return res if len(res) > 1 else res[0]
+        res_string = [ f"{__fman( i ) * math.pow( 10, exp ):.{decimals}f} {dictionary[ o ]}"
+                       for i, exp, o in zip( x, diff, ooms_matched ) ]
+    
+    res_scale = [ math.pow( 10, o ) for o in ooms_matched ]
+    res_oom = [ dictionary[ o ] for o in ooms_matched ]
+    
+    return (res_scale, res_oom, res_string) if len( res_string ) > 1 \
+        else (res_scale[ 0 ], res_oom[ 0 ], res_string[ 0 ])
 
 
-def power_of_ten(x):
-    if isinstance(x, float):
-        x = [x]
-
-    exps = list(map(__fexp, x))
-
-    res = [math.pow(10, exp) for exp in exps]
-
-    return res if len(res) > 1 else res[0]
+def order_of_magnitude( x ):
+    if isinstance( x, float ):
+        x = [ x ]
+    
+    res = list( map( lambda x: int( math.floor( math.log10( x ) if x != 0 else 0 ) ), x ) )
+    
+    return res if len( res ) > 1 else res[ 0 ]
 
 
-def convert(x, scale):
+def power_of_ten( x ):
+    if isinstance( x, float ):
+        x = [ x ]
+    
+    exps = list( map( __fexp, x ) )
+    
+    res = [ math.pow( 10, exp ) for exp in exps ]
+    
+    return res if len( res ) > 1 else res[ 0 ]
+
+
+def convert( x, scale ):
     from collections import ChainMap
-
-    if isinstance(x, float):
-        x = [x]
-
-    ooms = power_of_ten(x)
-
-    if isinstance(scale, (int, float)):
-        scaler = __fexp(scale)
-
-    if isinstance(scale, str):
-        m = ChainMap(__prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted)
+    
+    if isinstance( x, float ):
+        x = [ x ]
+    
+    ooms = power_of_ten( x )
+    
+    if isinstance( scale, (int, float) ):
+        scaler = __fexp( scale )
+    
+    if isinstance( scale, str ):
+        m = ChainMap( __prefixes_inverted, __symbols_inverted, __short_scale_inverted, __long_scale_inverted )
         try:
-            scaler = m[scale]
+            scaler = m[ scale ]
         except KeyError:
-            raise KeyError(f"{scale} is not a valid SI measure")
+            raise KeyError( f"{scale} is not a valid SI measure" )
     scaler *= -1
-    res = [el * math.pow(10, scaler) for el in x]
-
+    res = [ el * math.pow( 10, scaler ) for el in x ]
+    
     return res
 
 
-def prefix(x, decimals=1, scale=None, omit_x=None, word=False):
-    return __return_oom(x, __prefixes, decimals, scale, omit_x, word=word)
+def prefix( x, decimals=1, scale=None, word=False ):
+    return __return_oom( x, __prefixes, decimals, scale, word=word )
 
 
-def symbol(x, decimals=1, scale=None, omit_x=None, word=False):
-    return __return_oom(x, __symbols, decimals, scale, omit_x, word=word)
+def symbol( x, decimals=1, scale=None, word=False ):
+    return __return_oom( x, __symbols, decimals, scale, word=word )
 
 
-def short_scale(x, decimals=1, scale=None, omit_x=None, word=True):
-    return __return_oom(x, __short_scale, decimals, scale, omit_x, word=word)
+def short_scale( x, decimals=1, scale=None, word=True ):
+    return __return_oom( x, __short_scale, decimals, scale, word=word )
 
 
-def long_scale(x, decimals=1, scale=None, omit_x=None, word=True):
-    return __return_oom(x, __long_scale, decimals, scale, omit_x, word=word)
+def long_scale( x, decimals=1, scale=None, word=True ):
+    return __return_oom( x, __long_scale, decimals, scale, word=word )
 
 
 def prefixes_dict():

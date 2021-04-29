@@ -3,14 +3,14 @@ from os import path
 
 from setuptools import setup
 
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
+this_directory = path.abspath( path.dirname( __file__ ) )
+with open( path.join( this_directory, 'README.rst' ), encoding='utf-8' ) as f:
     long_description = f.read()
 
 setup(
         name='order_of_magnitude',
-        version='v2.2.1',
-        packages=['order_of_magnitude'],
+        version='v2.3',
+        packages=[ 'order_of_magnitude' ],
         url='https://github.com/Tioz90/order_of_magnitude',
         license='MIT',
         author='Thomas Tiotto',
