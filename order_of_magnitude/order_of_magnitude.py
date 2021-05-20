@@ -1,5 +1,6 @@
 import math
 import operator
+from numbers import Number
 
 
 def __fexp( f ):
@@ -214,7 +215,7 @@ def __compute_oom( x, dictionary ):
 def __compute_oom_reference( x, ref_scale ):
     from collections import ChainMap
     
-    if isinstance( ref_scale, (int, float) ):
+    if isinstance( ref_scale, Number ):
         scaler = __fexp( ref_scale )
     
     if isinstance( ref_scale, str ):
@@ -234,7 +235,7 @@ def __compute_oom_reference( x, ref_scale ):
 def __return_oom( x, dictionary, decimals, ref_scale, word ):
     from num2words import num2words
     
-    if isinstance( x, float ):
+    if isinstance( x, Number ):
         x = [ x ]
     
     if ref_scale:
@@ -257,7 +258,7 @@ def __return_oom( x, dictionary, decimals, ref_scale, word ):
 
 
 def order_of_magnitude( x ):
-    if isinstance( x, float ):
+    if isinstance( x, Number ):
         x = [ x ]
     
     res = list( map( lambda x: int( math.floor( math.log10( x ) if x != 0 else 0 ) ), x ) )
@@ -266,7 +267,7 @@ def order_of_magnitude( x ):
 
 
 def power_of_ten( x ):
-    if isinstance( x, float ):
+    if isinstance( x, Number ):
         x = [ x ]
     
     exps = list( map( __fexp, x ) )
@@ -279,12 +280,12 @@ def power_of_ten( x ):
 def convert( x, scale ):
     from collections import ChainMap
     
-    if isinstance( x, float ):
+    if isinstance( x, Number ):
         x = [ x ]
     
     ooms = power_of_ten( x )
     
-    if isinstance( scale, (int, float) ):
+    if isinstance( scale, Number ):
         scaler = __fexp( scale )
     
     if isinstance( scale, str ):
